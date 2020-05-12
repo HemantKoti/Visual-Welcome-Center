@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Visual Welcome Center";
+}
+
+<div class="text-center">
+    <h1 class="display-4"> University at Buffalo </h1>
+    <p></p>
+    <h3 class="display-5"> Department of Computer Science and Engineering </h3>
+    <p></p>
+    @if (!User.Identity.IsAuthenticated)
+    {
+
+        <p>Sign In to book an appointment.</p>
+    }
+    else
+    {
+        <p>Click on <b>Schedule</b> to book an appointment.</p>
+    }
+</div>

@@ -1,0 +1,43 @@
+﻿@model IEnumerable<VisualWelcomeCenter.Models.UserDetails>
+
+@{
+    ViewData["Title"] = "Appointment History";
+}
+
+<h1>Appointment History</h1>
+
+<p>It is mandatory to upload an image for recognition purposes. Update your profile image for the first time and then schedule future appoints using <i>Schedule a new Appointment</i> link</p>
+
+<p>
+    <a asp-action="UpdateProfile">Update your Profile</a>
+</p>
+
+<p>
+    <a asp-action="Create">Schedule a new Appointment</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Appointment Date
+            </th>
+            <th>
+                Visiting Purpose
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastEnteredDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VisitingPurpose)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

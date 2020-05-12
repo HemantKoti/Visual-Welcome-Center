@@ -1,0 +1,36 @@
+﻿@model VisualWelcomeCenter.Models.UserDetails
+
+@{
+    ViewData["Title"] = "Schedule an Appointment";
+}
+
+<h1>Schedule an appointment</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LastEnteredDate" class="control-label">Date</label>
+                <input asp-for="LastEnteredDate" class="form-control" />
+                <span asp-validation-for="LastEnteredDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VisitingPurpose" class="control-label">Purpose of Visit</label>
+                <input asp-for="VisitingPurpose" class="form-control" />
+                <span asp-validation-for="VisitingPurpose" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
