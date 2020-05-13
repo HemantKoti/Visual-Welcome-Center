@@ -46,4 +46,4 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         sys.exit()
 
     def NavigateToHome(self):
-        print()
+        self.vwcStack.setCurrentWidget(self.detectFaceWidget)
