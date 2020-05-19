@@ -9,11 +9,16 @@ using VisualWelcomeCenter.Utils;
 using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Linq;
 
 namespace VisualWelcomeCenter.Controllers
 {
+    /// <summary>
+    /// REST API Controller to do all the required tasks
+    /// </summary>
     public class UserDetailsController : Controller
     {
+        IEnumerable<UserDetails> userDetails = null;
         ClsMongoDbDataContext _dbContext = new ClsMongoDbDataContext("UserDetails");
         private readonly IHostingEnvironment hostingEnvironment;
 
@@ -22,12 +27,15 @@ namespace VisualWelcomeCenter.Controllers
             this.hostingEnvironment = hostingEnvironment;
         }
 
-
-        // GET: UserDetails
+        /// <summary>
+        /// GET: UserDetails
+        /// </summary>
+        /// <returns></returns>
         public async Task<ActionResult> Index()
         {
-            IEnumerable<UserDetails> userDetails = null;
-            using (IAsyncCursor<UserDetails> cursor = await this._dbContext.GetUserDetails.FindAsync(new BsonDocument()))
+            userDetails = null;
+            FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
+            using (IAsyncCursor<UserDetails> cursor = await this._dbContext.GetUserDetails.FindAsync(filter))
             {
                 while (await cursor.MoveNextAsync())
                 {
@@ -38,7 +46,10 @@ namespace VisualWelcomeCenter.Controllers
             return View(userDetails);
         }
 
-        // GET: UserDetails/Create
+        /// <summary>
+        /// GET: UserDetails/Create
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Create()
         {
             return View();
@@ -50,7 +61,11 @@ namespace VisualWelcomeCenter.Controllers
             return View();
         }
 
-        // POST: UserDetails/Create
+        /// <summary>
+        /// POST: UserDetails/Create
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserDetails model)
@@ -62,20 +77,29 @@ namespace VisualWelcomeCenter.Controllers
                     return View(model);
                 }
 
-                model.Name = User.Identity.Name;
-                model.LastEnteredDate = DateTime.UtcNow;
+                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
 
-                await this._dbContext.GetUserDetails.InsertOneAsync(model);
+                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("VisitingPurpose", model.VisitingPurpose);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                update = Builders<UserDetails>.Update.Set("AppointmentDate", model.AppointmentDate);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                // await this._dbContext.GetUserDetails.InsertOneAsync(model);
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
                 return View();
             }
         }
 
-        // POST: UserDetails/UpdateProfile
+        /// <summary>
+        /// POST: UserDetails/UpdateProfile
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UpdateProfile(UserDetails model)
@@ -90,24 +114,25 @@ namespace VisualWelcomeCenter.Controllers
                 }
 
                 if (model.Photo != null)
-                {
-                    string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
-
-                    uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    FileStream image = new FileStream(filePath, FileMode.Create);
-                    model.Photo.CopyTo(image);
+                {                   
+                    MemoryStream stream = new MemoryStream();
+                    model.Photo.CopyTo(stream);
+                    model.Picture = stream.ToArray();
                 }
 
-                model.Name = User.Identity.Name;
-                model.LastEnteredDate = DateTime.UtcNow;
+                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
 
-                await this._dbContext.GetUserDetails.InsertOneAsync(model);
+                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("EmailAddress", model.EmailAddress);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                update = Builders<UserDetails>.Update.Set("Picture", model.Picture);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                // await this._dbContext.GetUserDetails.InsertOneAsync(model);
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
                 return View();
             }

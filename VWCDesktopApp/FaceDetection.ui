@@ -133,7 +133,7 @@
             <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
           </property>
           <property name="text">
-            <string>Welcome to the Computer and Information Sciences Department. If you have not registered scan the QR code below in order to complete the registration.</string>
+            <string>Welcome to the Computer and Information Sciences Department. If you have not registered scan the QR code below in order to complete the registration process.</string>
           </property>
           <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -196,7 +196,7 @@
             <verstretch>0</verstretch>
           </sizepolicy>
         </property>
-        <widget class="QLabel" name="loginLabel">
+        <widget class="QWidget" name="loginLabelWidget" native="true">
           <property name="geometry">
             <rect>
               <x>300</x>
@@ -211,23 +211,8 @@
               <verstretch>0</verstretch>
             </sizepolicy>
           </property>
-          <property name="toolTipDuration">
-            <number>1</number>
-          </property>
-          <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-          </property>
           <property name="styleSheet">
-            <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-          </property>
-          <property name="text">
-            <string>Welcome to the Computer and Information Sciences Department. If you have not registered scan the QR code below in order to complete the registration.</string>
-          </property>
-          <property name="alignment">
-            <set>Qt::AlignCenter</set>
-          </property>
-          <property name="wordWrap">
-            <bool>true</bool>
+            <string notr="true"/>
           </property>
         </widget>
         <widget class="QWidget" name="loginPhotoWidget" native="true">
@@ -249,7 +234,7 @@
             <string notr="true"/>
           </property>
         </widget>
-        <widget class="QTextBrowser" name="userDetailsText">
+        <widget class="QWidget" name="userDetailsWidget" native="true">
           <property name="geometry">
             <rect>
               <x>150</x>
@@ -257,6 +242,15 @@
               <width>500</width>
               <height>300</height>
             </rect>
+          </property>
+          <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+            </sizepolicy>
+          </property>
+          <property name="styleSheet">
+            <string notr="true"/>
           </property>
         </widget>
       </widget>

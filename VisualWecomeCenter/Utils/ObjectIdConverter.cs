@@ -7,6 +7,9 @@ using System.Text;
 
 namespace VisualWelcomeCenter.Utils
 {
+    /// <summary>
+    /// Object ID converter
+    /// </summary>
     public class ObjectIdConverter : JsonConverter
     {        
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

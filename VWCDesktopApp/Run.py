@@ -2,6 +2,7 @@
     Name: Hemant Koti
     UB ID: 50338178
     UB Name: hemantko
+    Description: Beginning of the program execution
 """
 
 import sys
@@ -13,6 +14,9 @@ from Constants import Constants
 
 class Run():
     def __init__(self):
+        """
+            Run Init. Marks the beginning of the program execution
+        """
         constants = Constants()
         application = QtWidgets.QApplication(sys.argv)
         window = MainWindow()

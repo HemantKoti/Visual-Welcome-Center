@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<VisualWelcomeCenter.Models.UserDetails>
 
 @{
-    ViewData["Title"] = "Appointment History";
+    ViewData["Title"] = "Appointment Details";
 }
 
 <h1>Appointment History</h1>
@@ -30,14 +30,15 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastEnteredDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitingPurpose)
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AppointmentDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VisitingPurpose)
+                </td>
+            </tr>
+
         }
     </tbody>
 </table>

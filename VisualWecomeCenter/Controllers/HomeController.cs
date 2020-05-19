@@ -9,6 +9,9 @@ using VisualWelcomeCenter.Models;
 
 namespace VisualWelcomeCenter.Controllers
 {
+    /// <summary>
+    /// Home Controller
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

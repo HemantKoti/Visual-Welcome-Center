@@ -11,11 +11,12 @@
     <div class="col-md-4">
         <form asp-action="UpdateProfile" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @*<div class="form-group">
+            <input type="hidden" name="Name" value="@User.Identity.Name" />
+            <div class="form-group">
                 <label asp-for="EmailAddress" class="control-label">Email Address</label>
                 <input asp-for="EmailAddress" class="form-control" />
                 <span asp-validation-for="EmailAddress" class="text-danger"></span>
-            </div>*@
+            </div>
             <div class="form-group">
                 <label asp-for="Photo" class="control-label">Upload your image</label>
                 <input asp-for="Photo" class="form-control" accept=".png,.jpg">

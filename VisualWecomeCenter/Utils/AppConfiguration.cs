@@ -6,6 +6,9 @@ using System.Text;
 
 namespace VisualWelcomeCenter.Utils
 {
+    /// <summary>
+    ///  Application Configuration
+    /// </summary>
     public static class AppConfiguration
     {
         private static IConfiguration currentConfig;

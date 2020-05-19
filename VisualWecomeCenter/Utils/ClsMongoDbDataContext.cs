@@ -3,6 +3,9 @@ using VisualWelcomeCenter.Models;
 
 namespace VisualWelcomeCenter.Utils
 {
+    /// <summary>
+    /// Mongo DB connector class
+    /// </summary>
     public class ClsMongoDbDataContext
     {
         private string _connectionStrings = string.Empty;
