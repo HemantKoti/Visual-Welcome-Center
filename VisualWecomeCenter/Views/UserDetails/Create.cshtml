@@ -1,7 +1,11 @@
-﻿@model VisualWelcomeCenter.Models.UserDetails
+﻿@using System.Security.Claims
+@model VisualWelcomeCenter.Models.UserDetails
 
 @{
     ViewData["Title"] = "Schedule an Appointment";
+    var identity = User.Identity as ClaimsIdentity;
+    string emailAddress = identity.Claims.FirstOrDefault(x => x.Type == "emails")?.Value;
+    string jobtitle = identity.Claims.FirstOrDefault(x => x.Type == "jobtitle")?.Value;
 }
 
 <h1>Schedule an appointment</h1>
@@ -11,6 +15,9 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="Name" value="@User.Identity.Name" />
+            <input type="hidden" name="EmailAddress" value="@emailAddress" />
+            <input type="hidden" name="JobTitle" value="@jobtitle" />
+
             <div class="form-group">
                 <label asp-for="AppointmentDate" class="control-label">Appointment Date</label>
                 <input asp-for="AppointmentDate" class="form-control" />

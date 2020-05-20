@@ -24,19 +24,25 @@ namespace VisualWelcomeCenter.Models
         public ObjectId ObjectId { get; set; }
 
         [Key]
-        [BsonElement("Name")]
-        [Column(TypeName = "varchar(50)")]
-        public string Name { get; set; }
-
         [BsonElement("EmailAddress")]
         [Column(TypeName = "varchar(50)")]
         [DataType(DataType.EmailAddress)]
+        [Required]
         public string EmailAddress { get; set; }
 
-        [BsonElement("VisitingPurpose")]
-        public string VisitingPurpose { get; set; }
+        [BsonElement("Name")]
+        [Column(TypeName = "varchar(50)")]
+        [Required]
+        public string Name { get; set; }
 
-        public IFormFile Photo { get; set; }
+        [BsonElement("JobTitle")]
+        [Column(TypeName = "varchar(50)")]
+        public string JobTitle { get; set; }
+
+        [BsonElement("VisitingPurpose")]
+        [Column(TypeName = "varchar(200)")]
+        [DataType(DataType.MultilineText)]
+        public string VisitingPurpose { get; set; }
 
         [BsonElement("AppointmentDate")]
         [Column(TypeName = "date")]
@@ -55,5 +61,8 @@ namespace VisualWelcomeCenter.Models
         [BsonElement("Encodings")]
         [Column(TypeName = "array")]
         public byte[] Encodings { get; set; }
+
+        [DataType(DataType.Upload)]
+        public IFormFile Photo { get; set; }
     }
 }

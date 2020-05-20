@@ -2,29 +2,42 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using VisualWelcomeCenter.Models;
 using VisualWelcomeCenter.Utils;
-using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using DnsClient.Internal;
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace VisualWelcomeCenter.Controllers
 {
     /// <summary>
     /// REST API Controller to do all the required tasks
     /// </summary>
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class UserDetailsController : Controller
     {
         IEnumerable<UserDetails> userDetails = null;
         ClsMongoDbDataContext _dbContext = new ClsMongoDbDataContext("UserDetails");
-        private readonly IHostingEnvironment hostingEnvironment;
+        readonly string emailAddress = string.Empty;
 
-        public UserDetailsController(IHostingEnvironment hostingEnvironment)
+        [Obsolete]
+        public IHostingEnvironment HostingEnvironment { get; }
+
+        public Microsoft.Extensions.Logging.ILogger<UserDetailsController> Logger { get; }
+
+        [Obsolete]
+        public UserDetailsController(IHostingEnvironment hostingEnvironment, ILogger<UserDetailsController> logger, IHttpContextAccessor httpContextAccessor)
         {
-            this.hostingEnvironment = hostingEnvironment;
+            this.HostingEnvironment = hostingEnvironment;
+            this.Logger = logger;
+
+            var identity = httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            this.emailAddress = identity.Claims.FirstOrDefault(x => x.Type == "emails")?.Value;
         }
 
         /// <summary>
@@ -33,8 +46,10 @@ namespace VisualWelcomeCenter.Controllers
         /// <returns></returns>
         public async Task<ActionResult> Index()
         {
+            this.Logger.LogInformation("Enter Index()");
+
             userDetails = null;
-            FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
+            FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("EmailAddress", this.emailAddress);
             using (IAsyncCursor<UserDetails> cursor = await this._dbContext.GetUserDetails.FindAsync(filter))
             {
                 while (await cursor.MoveNextAsync())
@@ -43,6 +58,7 @@ namespace VisualWelcomeCenter.Controllers
                 }
             }
 
+            this.Logger.LogInformation("Exit Index()");
             return View(userDetails);
         }
 
@@ -70,6 +86,8 @@ namespace VisualWelcomeCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserDetails model)
         {
+            this.Logger.LogInformation("Enter Create Schedule()");
+
             try
             {
                 if (!ModelState.IsValid)
@@ -77,20 +95,26 @@ namespace VisualWelcomeCenter.Controllers
                     return View(model);
                 }
 
-                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
+                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("EmailAddress", this.emailAddress);
 
-                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("VisitingPurpose", model.VisitingPurpose);
+                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("Name", model.Name);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                update = Builders<UserDetails>.Update.Set("JobTitle", model.JobTitle);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                update = Builders<UserDetails>.Update.Set("VisitingPurpose", model.VisitingPurpose);
                 await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
 
                 update = Builders<UserDetails>.Update.Set("AppointmentDate", model.AppointmentDate);
                 await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
 
-                // await this._dbContext.GetUserDetails.InsertOneAsync(model);
-
+                this.Logger.LogInformation("Exit Create Schedule()");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                this.Logger.LogError("Create Schedule() Exception: " + ex.ToString());
                 return View();
             }
         }
@@ -104,36 +128,39 @@ namespace VisualWelcomeCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UpdateProfile(UserDetails model)
         {
+            this.Logger.LogInformation("Enter UpdateProfile()");
+
             try
             {
-                string uniqueFileName = null;
-
                 if (!ModelState.IsValid)
                 {
                     return View(model);
                 }
 
                 if (model.Photo != null)
-                {                   
+                {
                     MemoryStream stream = new MemoryStream();
                     model.Photo.CopyTo(stream);
                     model.Picture = stream.ToArray();
                 }
 
-                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("Name", User.Identity.Name);
+                FilterDefinition<UserDetails> filter = Builders<UserDetails>.Filter.Eq("EmailAddress", this.emailAddress);
 
-                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("EmailAddress", model.EmailAddress);
+                UpdateDefinition<UserDetails> update = Builders<UserDetails>.Update.Set("Name", model.Name);
+                await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
+
+                update = Builders<UserDetails>.Update.Set("JobTitle", model.JobTitle);
                 await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
 
                 update = Builders<UserDetails>.Update.Set("Picture", model.Picture);
                 await this._dbContext.GetUserDetails.UpdateOneAsync(filter, update, new UpdateOptions() { IsUpsert = true });
 
-                // await this._dbContext.GetUserDetails.InsertOneAsync(model);
-
+                this.Logger.LogInformation("Exit UpdateProfile()");
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                this.Logger.LogError("UpdateProfile Exception: " + ex.ToString());
                 return View();
             }
         }

@@ -1,7 +1,11 @@
-﻿@model VisualWelcomeCenter.Models.UserDetails
+﻿@using System.Security.Claims
+@model VisualWelcomeCenter.Models.UserDetails
 
 @{
     ViewData["Title"] = "Update Profile Image";
+    var identity = User.Identity as ClaimsIdentity;
+    string emailAddress = identity.Claims.FirstOrDefault(x => x.Type == "emails")?.Value;
+    string jobtitle = identity.Claims.FirstOrDefault(x => x.Type == "jobtitle")?.Value;
 }
 
 <h1>Update your Profile</h1>
@@ -12,11 +16,9 @@
         <form asp-action="UpdateProfile" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="Name" value="@User.Identity.Name" />
-            <div class="form-group">
-                <label asp-for="EmailAddress" class="control-label">Email Address</label>
-                <input asp-for="EmailAddress" class="form-control" />
-                <span asp-validation-for="EmailAddress" class="text-danger"></span>
-            </div>
+            <input type="hidden" name="EmailAddress" value="@emailAddress" />
+            <input type="hidden" name="JobTitle" value="@jobtitle" />
+
             <div class="form-group">
                 <label asp-for="Photo" class="control-label">Upload your image</label>
                 <input asp-for="Photo" class="form-control" accept=".png,.jpg">

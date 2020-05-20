@@ -1,0 +1,10 @@
+face_recognition_models
+Click>=6.0
+dlib>=19.3.0
+numpy
+pillow
+scipy>=0.17.0
+pyqt5>=5.13.0
+flask-pymongo==2.3.0
+flask
+pymongo
