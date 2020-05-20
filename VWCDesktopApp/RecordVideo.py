@@ -14,7 +14,7 @@ from PyQt5 import QtCore
 class RecordVideo(QtCore.QObject):
     image_data = QtCore.pyqtSignal(np.ndarray)
 
-    def __init__(self, camera_port = 0, parent=None):
+    def __init__(self, camera_port=0, parent=None):
         super().__init__(parent)
         self.video = cv2.VideoCapture(camera_port)
         self.timer = QtCore.QBasicTimer()

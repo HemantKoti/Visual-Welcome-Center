@@ -25,19 +25,25 @@
             <th>
                 Visiting Purpose
             </th>
+            <th>
+                Last Login
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AppointmentDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VisitingPurpose)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AppointmentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VisitingPurpose)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastLogin)
+            </td>
+        </tr>
 
         }
     </tbody>

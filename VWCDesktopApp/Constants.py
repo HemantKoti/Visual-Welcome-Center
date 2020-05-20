@@ -21,13 +21,16 @@ class Constants:
 
         self.loginImageWidth = self.loginImageHeight = 150
 
-        self.icon =  os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + os.path.sep + 'resources' +  os.path.sep + 'logo.ico'
-        self.qrcode =  os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + os.path.sep + 'resources' +  os.path.sep + 'qrcode.png'
+        self.icon = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + os.path.sep + 'resources' + os.path.sep + 'logo.ico'
+        self.qrcode = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + os.path.sep + 'resources' + os.path.sep + 'qrcode.png'
 
         self.conn_str = "mongodb://visualwelcomecenter:WXYWQRt7rJArEKFxWNDp6O0d8delDZC9lUvxTfG0OtjcfjTFR2WQSFwzfMexkTeWQy0ACaDbvq8FMi9bvvmSaw==@visualwelcomecenter.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@visualwelcomecenter@"
-        self.user_details_collection_name = self.database_name = "UserDetails"
+        self.database_name = "VisualWelcomeCenter"
+        self.user_details_collection_name = "UserDetails"
 
-        self.timeout = 45
+        self.date_time_format = "%m/%d/%Y %I:%M:%S %p"
+
+        self.timeout = 30
         
         self.welcomeLoginLabel = ""
         self.welcomeLoginTextBox = ""

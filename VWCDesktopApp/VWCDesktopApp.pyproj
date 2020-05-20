@@ -25,12 +25,10 @@
     <Compile Include="Constants.py" />
     <Compile Include="DatabaseManager.py" />
     <Compile Include="FaceDetectionWidget.py" />
-    <Compile Include="LoginComponent.py" />
     <Compile Include="MainWindowComponent.py" />
     <Compile Include="MultiWindow.py" />
     <Compile Include="RecordVideo.py" />
     <Compile Include="Run.py" />
-    <Compile Include="Utils.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />

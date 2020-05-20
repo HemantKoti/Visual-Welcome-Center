@@ -49,10 +49,9 @@ namespace VisualWelcomeCenter.Models
         [DataType(DataType.DateTime)]
         public DateTime? AppointmentDate { get; set; }
 
-        [BsonElement("LastEntered")]
-        [DataType(DataType.DateTime)]
-        [Column(TypeName = "date")]
-        public DateTime? LastEntered { get; set; }
+        [BsonElement("LastLogin")]
+        [Column(TypeName = "varchar(50)")]
+        public string LastLogin { get; set; }
 
         [BsonElement("Picture")]
         [Column(TypeName = "array")]

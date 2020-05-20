@@ -13,9 +13,9 @@ from FaceDetectionWidget import FaceDetectionWidget
 from RecordVideo import RecordVideo
 from Constants import Constants
 from DatabaseManager import DatabaseManager
-from Utils import Utils
 from PIL import Image
 from PIL.ImageQt import ImageQt
+from datetime import datetime
 
 qtFile = "FaceDetection.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtFile)
@@ -31,7 +31,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setFixedSize(self.size())
         self.constants = Constants()
-        self.utils = Utils()
         
         self.homeButton.triggered.connect(self.Home)        
         self.exitButton.triggered.connect(self.Exit)
@@ -43,34 +42,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             Timer function. Maintains a timer list, 45 seconds across each window period
         """
         if count >= self.constants.timeout:
-            try:
-                self.loginPhotolayout.deleteLater()
-            except:
-                print()
-
-            try:
-                self.loginLabelLayout.deleteLater()
-            except:
-                print()                
-            
-            try:
-                self.userDetailsLayout.deleteLater()
-            except:
-                print()
-
-            try:
-                self.scanQRlayout.deleteLater()
-            except:
-                print()
-
-            try: 
-                self.registerPhotolayout.deleteLater()
-            except:
-                print()
-
-            self.face_detection_widget.foundNewFace = False
-            self.face_detection_widget.foundFace = False
-
+            self.Destroy()
             self.startVideoCapture()
 
     def start_timer(self, slot, count=1, interval=1000):
@@ -93,7 +65,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
             Starts the video capture sending frames to the face detection module
         """
-        print("Start Video Capture")
 
         self.face_detection_widget = FaceDetectionWidget()
         self.record_video = RecordVideo()
@@ -108,6 +79,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         _face_login = self.loginFaceEvent
         self.face_detection_widget.faceLogin.connect(_face_login)
 
+        print("Starting video capture...")
         self.record_video.start_recording()
         
         self.boxlayout = QtWidgets.QVBoxLayout()
@@ -118,14 +90,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.vwcStack.setCurrentWidget(self.detectFaceWidget)
 
-    def loginFaceEvent(self, frame):
+
+    def loginFaceEvent(self, index):
         """
             Login face event method sent by face detection module
         """
         if self.face_detection_widget.foundFace:
             self.boxlayout.deleteLater()
             self.record_video.destroy()
-            self.set_login_widget(frame)
+            self.set_login_widget(index)
             self.start_timer(self.timer_func, self.constants.timeout)
 
     def registerFaceEvent(self, frame):
@@ -139,34 +112,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.set_qrcode_widget(image)
             self.start_timer(self.timer_func, self.constants.timeout)
 
-    def set_login_widget(self, image):
+    def set_login_widget(self, index):
         """
             Sets the screen to the login widget post event detection
         """
+
+        email = str(self.face_detection_widget.db_manager.email_address_list[index])
+        now = datetime.utcnow().strftime(self.constants.date_time_format)
+        self.face_detection_widget.db_manager.userDetailsCollection.update({"EmailAddress": email}, {"$set": {"LastLogin": now}})
+
         self.loginPhotolayout = QtWidgets.QVBoxLayout(self.loginPhotoWidget)
         label = QtWidgets.QLabel()
-        pixmap = QtGui.QPixmap.fromImage(ImageQt(Image.fromarray(image).resize((self.constants.loginImageWidth, self.constants.loginImageHeight))))        
+        pixmap = QtGui.QPixmap.fromImage(ImageQt(Image.fromarray(self.face_detection_widget.db_manager.picture_list[index]).resize((self.constants.loginImageWidth, self.constants.loginImageHeight))))        
         label.setPixmap(pixmap)
         self.loginPhotolayout.addWidget(label)
         self.loginPhotoWidget.setLayout(self.loginPhotolayout)
 
-        self.loginLabelLayout = QtWidgets.QVBoxLayout(self.loginLabelWidget)
-        labelLogin = QtWidgets.QLabel()
-        labelLogin.setText(self.constants.welcomeLoginLabel)
-        self.loginLabelLayout.addWidget(labelLogin)
-        self.loginLabelWidget.setLayout(self.loginLabelLayout)
-        QtWidgets.QApplication.processEvents()
-        QtGui.QGuiApplication.processEvents()
+        name = str(self.face_detection_widget.db_manager.known_face_names[index])
+        logintime = str(now)
+        jobtitle = str(self.face_detection_widget.db_manager.jobtitle_list[index])
+        vistingpurpose = str(self.face_detection_widget.db_manager.visiting_purpose_list[index])
+        appointmentdate = str(self.face_detection_widget.db_manager.appointment_time_list[index])  
+        
+        welcomeLoginLabel = "Welcome\t{0}".format(name)
+        welcomeLoginTextBox = "\t\t\t\tUser Details" + "\n\n\tLogin Time:\t\t{0}\n\n\tEmailAddress:\t\t{1}\n\n\tJob Title:\t\t{2}\n\n\tVisiting Purpose:\t{3}\n\n\tAppointment Date:\t{4}".format(logintime, email, jobtitle, vistingpurpose, appointmentdate)
 
-        self.userDetailsLayout = QtWidgets.QVBoxLayout(self.userDetailsWidget)
-        userDetailsLabel = QtWidgets.QLabel()
-        userDetailsLabel.setText(self.constants.welcomeLoginTextBox)
-        self.userDetailsLayout.addWidget(userDetailsLabel)
-        self.userDetailsWidget.setLayout(self.userDetailsLayout)
-        QtWidgets.QApplication.processEvents() 
-        QtGui.QGuiApplication.processEvents()
+        self.loginLabel.setText(welcomeLoginLabel)
+        self.userDetailsLabel.setText(welcomeLoginTextBox)
 
         self.vwcStack.setCurrentWidget(self.loginWidget)
+
 
     def set_qrcode_widget(self, image):
         """
@@ -188,6 +163,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.vwcStack.setCurrentWidget(self.completeRegistrationWidget)
 
+    def Destroy(self):
+        try:
+            self.loginPhotolayout.deleteLater()
+        except Exception as ex:
+            print(ex)
+
+        try:
+            self.loginLabelLayout.deleteLater()
+        except Exception as ex:
+            print(ex)                
+            
+        try:
+            self.userDetailsLayout.deleteLater()
+        except Exception as ex:
+            print(ex)
+
+        try:
+            self.scanQRlayout.deleteLater()
+        except Exception as ex:
+            print(ex)
+
+        try: 
+            self.registerPhotolayout.deleteLater()
+        except Exception as ex:
+            print(ex)
+
+        self.face_detection_widget.foundNewFace = False
+        self.face_detection_widget.foundFace = False
+
     def Exit(self):
         """
             Exit the system
@@ -199,4 +203,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
             Navigate to home
         """
+
+        self.Destroy()
         self.startVideoCapture()

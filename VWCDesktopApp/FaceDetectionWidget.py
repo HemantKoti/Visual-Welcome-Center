@@ -19,7 +19,7 @@ from DatabaseManager import DatabaseManager
 class FaceDetectionWidget(QtWidgets.QWidget):
 
     faceRegister = QtCore.pyqtSignal(np.ndarray)
-    faceLogin = QtCore.pyqtSignal(np.ndarray)
+    faceLogin = QtCore.pyqtSignal(int)
 
 
     def __init__(self, parent=None):
@@ -75,22 +75,23 @@ class FaceDetectionWidget(QtWidgets.QWidget):
         face_encodings = []
         face_names = []
 
-        # Resize frame of video to 1/4 size for faster face recognition processing
+        # Resize frame of video to 1/4 size for faster face recognition
+        # processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-        # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+        # Convert the image from BGR color (which OpenCV uses) to RGB color
+        # (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
-
-        self.db_manager.update_db_state()
-        self.db_manager.update_encodings()
 
         # Only process every other frame of video to save time
         if self.process_this_frame:
-            # Find all the faces and face encodings in the current frame of video
+            # Find all the faces and face encodings in the current frame of the video
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
             face_names = []
+
             for face_encoding in face_encodings:
+
                 # See if the face is a match for the known face(s)
                 matches = face_recognition.compare_faces(self.db_manager.known_face_encodings, face_encoding)
                 first_match_index = 0
@@ -98,13 +99,12 @@ class FaceDetectionWidget(QtWidgets.QWidget):
 
                 # If a match was found in known_face_encodings, just use the first one.
                 try:
-                    if len(matches) > 0:
-                        if True in matches:
-                            first_match_index = matches.index(True)
-                            name = self.db_manager.known_face_names[first_match_index]
-                except:
+                    if True in matches:
+                        first_match_index = matches.index(True)
+                        name = self.db_manager.known_face_names[first_match_index]
+                except Exception as ex:
                     name = self.db_manager.known_face_names[first_match_index]
-                    print("Error while finding matches. Match found was not correct, reverting to the first found index")
+                    print("Error while finding matches. Match found was not correct, reverting to the first found index: {0}".format(ex))
             
                 face_names.append(name)
 
@@ -112,7 +112,8 @@ class FaceDetectionWidget(QtWidgets.QWidget):
 
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
-            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            # Scale back up face locations since the frame we detected in was
+            # scaled to 1/4 size
             top *= 4
             right *= 4
             bottom *= 4
@@ -141,5 +142,4 @@ class FaceDetectionWidget(QtWidgets.QWidget):
             self.faceRegister.emit(frame)
 
         if self.foundFace:
-            self.db_manager.write_login_text(first_match_index)
-            self.faceLogin.emit(self.db_manager.picture_list[first_match_index])
+            self.faceLogin.emit(first_match_index)
