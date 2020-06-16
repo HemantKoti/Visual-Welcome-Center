@@ -1,0 +1,4 @@
+https://github.com/ageitgey/face_recognition/issues/175
+https://github.com/ageitgey/face_recognition
+https://nitratine.net/blog/post/python-guis-with-pyqt/
+https://stackoverflow.com/a/46667864

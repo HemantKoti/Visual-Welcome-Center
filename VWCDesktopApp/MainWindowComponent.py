@@ -24,8 +24,10 @@ Ui_MainWindow, QtBaseClass = uic.loadUiType(qtFile)
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         """
-            Main Window Init. Handles all the operations pertaining to the Main UI
+            Description:
+                Main Window. Instantiate all the modules required by the MainWindow.
         """
+
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
@@ -39,16 +41,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def timer_func(self, count):
         """
-            Timer function. Maintains a timer list, 45 seconds across each window period
+            Description:
+                Timer function. Maintains a timer list, 45 seconds across each window period.
+
+            Args:
+                Count: Number of seconds passed by                  
         """
+
         if count >= self.constants.timeout:
             self.Destroy()
             self.startVideoCapture()
 
     def start_timer(self, slot, count=1, interval=1000):
         """
-            Start timer event method
+            Description:
+                Start timer event method
+
+            Args:
+                Slot:
+                Count: Number 
+                Interval:      
         """
+
         counter = 0
         def handler():
             nonlocal counter
@@ -63,7 +77,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def startVideoCapture(self):
         """
-            Starts the video capture sending frames to the face detection module
+            Description:
+                Starts the video capture sending frames to the face detection module.
         """
 
         self.face_detection_widget = FaceDetectionWidget()
@@ -93,8 +108,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def loginFaceEvent(self, index):
         """
-            Login face event method sent by face detection module
+            Description:
+                Login face event method sent by face detection module
+
+            Args:
+                Index: 
         """
+
         if self.face_detection_widget.foundFace:
             self.boxlayout.deleteLater()
             self.record_video.destroy()
@@ -103,8 +123,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def registerFaceEvent(self, frame):
         """
-            Register event method sent by face detection module
+            Description:
+                Register event method sent by face detection module
+
+            Args:
+                Frame: 
         """
+
         if self.face_detection_widget.foundNewFace:
             self.boxlayout.deleteLater()
             self.record_video.destroy()
@@ -114,7 +139,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def set_login_widget(self, index):
         """
-            Sets the screen to the login widget post event detection
+            Description:
+                Sets the screen to the login widget post event detection
+
+            Args:
+                Index:
         """
 
         email = str(self.face_detection_widget.db_manager.email_address_list[index])
@@ -145,8 +174,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def set_qrcode_widget(self, image):
         """
-            Sets the screen to the QR code widget post event detection
+            Description:
+                Sets the screen to the QR code widget post event detection
+
+           Args:
+                Image: 
         """
+
         self.scanQRlayout = QtWidgets.QVBoxLayout(self.scanQRWidget)
         label = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(self.constants.qrcode)
@@ -164,6 +198,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.vwcStack.setCurrentWidget(self.completeRegistrationWidget)
 
     def Destroy(self):
+        """
+            Description:
+                Sets the screen to the QR code widget post event detection
+        """
+
         try:
             self.loginPhotolayout.deleteLater()
         except Exception as ex:
@@ -194,14 +233,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def Exit(self):
         """
-            Exit the system
+            Description:
+                Exit the system
         """
+
         self.record_video.destroy()
         sys.exit()
 
     def Home(self):
         """
-            Navigate to home
+            Description:
+                Navigate to home
         """
 
         self.Destroy()

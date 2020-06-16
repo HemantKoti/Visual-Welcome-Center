@@ -2,7 +2,7 @@
     Name: Hemant Koti
     UB ID: 50338178
     UB Name: hemantko
-    Desciption: This program is responsible to handle all the face detection algorithms by the system.
+    Desciption: This program is responsible to handle all the face detection and recognition algorithms.
 """
 
 import cv2
@@ -24,8 +24,9 @@ class FaceDetectionWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         """
-            Face Detection Init. Starts all the instances required by face detection
+            Face Detection Init. Instantiate all the classes required by face detection module.
         """
+
         super().__init__(parent)
         self.constants = Constants()
         self.db_manager = DatabaseManager()
@@ -65,22 +66,21 @@ class FaceDetectionWidget(QtWidgets.QWidget):
 
     def facerec_from_webcam(self, frame):
         """
-            This method is bound to the Record video capture class where all the frames are sent to this class.
-            This method also handles all the necessary operations required for face detection. 
+            This method is bound to the Record video capture class where all the frames are captured, connected and sent one by one.
+            This method also handles all the necessary operations required for face detection and recognition. 
             First step is to find the the facial locations then find the facial encodings.
-            The known facial locations are taken from the Mondgo db database and compared with the video feed frames.
-            The feed also displays the frames with name details as well.
+            The known facial locations of all the registered people are taken from the Mondgo database and compared with the video frames.
+            The feed also displays the frames with name and other details as well.
         """
+
         face_locations = []
         face_encodings = []
         face_names = []
 
-        # Resize frame of video to 1/4 size for faster face recognition
-        # processing
+        # Resize frame of video to 1/4 size for faster face recognition processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-        # Convert the image from BGR color (which OpenCV uses) to RGB color
-        # (which face_recognition uses)
+        # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
 
         # Only process every other frame of video to save time
@@ -112,8 +112,7 @@ class FaceDetectionWidget(QtWidgets.QWidget):
 
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
-            # Scale back up face locations since the frame we detected in was
-            # scaled to 1/4 size
+            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
             top *= 4
             right *= 4
             bottom *= 4
